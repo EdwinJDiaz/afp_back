@@ -10,18 +10,23 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 
 @Entity
-@Table(name="departamento")
+@Table(name = "departamento")
 public class DepartamentosVO implements Serializable {
 
 	private static final long serialVersionUID = 1L;
-	
+
 	@Id
-	@GeneratedValue(strategy=GenerationType.IDENTITY)
-	@Column(name="id")
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Column(name = "id")
 	private Long id;
-	
+
 	@Column(name = "nombre_departamento")
 	private String nombre_departamento;
+	
+	
+	public DepartamentosVO() {
+		super();
+	}
 
 	public DepartamentosVO(Long id, String nombre_departamento) {
 		super();
@@ -30,10 +35,6 @@ public class DepartamentosVO implements Serializable {
 	}
 
 	
-	public DepartamentosVO() {
-		super();
-	}
-
 
 	public Long getId() {
 		return id;
@@ -54,6 +55,11 @@ public class DepartamentosVO implements Serializable {
 	public static long getSerialversionuid() {
 		return serialVersionUID;
 	}
-	
+
+	@Override
+	public String toString() {
+		return "DepartamentosVO [id=" + id + ", nombre_departamento=" + nombre_departamento + "]";
+	}
+
 	
 }

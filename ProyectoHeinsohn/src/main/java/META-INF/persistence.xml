@@ -12,6 +12,7 @@
 		<class>co.andres.ws.vo.CiudadesVO</class>
 		<class>co.andres.ws.vo.DepartamentosVO</class>
 		<class>co.andres.ws.vo.UsuariosVo</class>
+		<class>co.andres.ws.vo.TipoDocumentoVO</class>
 		
 		<properties>
 			<property name="javax.persistence.jdbc.driver"

@@ -9,6 +9,7 @@ import javax.swing.JOptionPane;
 
 import co.andres.ws.aplicacion.JPAUtil;
 import co.andres.ws.vo.CiudadesVO;
+import co.andres.ws.vo.DepartamentosVO;
 import co.andres.ws.vo.UsuariosVo;
 
 public class CiudadDao {
@@ -37,30 +38,87 @@ public class CiudadDao {
 
 	public String Registrar(CiudadesVO ciudadesVO) {
 		// TODO Auto-generated method stub
-		entityManager.getTransaction().begin();
-		entityManager.persist(ciudadesVO);
-		entityManager.getTransaction().commit();
+		String resp = "";
+		List<CiudadesVO> listaCiudades = new ArrayList<CiudadesVO>();
+		Query query = entityManager.createQuery(
+				"SELECT p FROM CiudadesVO p WHERE p.nombre_ciudad = '" + ciudadesVO.getNombre_ciudad() + "' AND p.departamentos.id='"+ciudadesVO.getDepartamentos().getId()+"'");
 
-		String resp = "ok";
-		return resp;
+		listaCiudades = query.getResultList();
+
+		if (ciudadesVO.getNombre_ciudad().isEmpty() || ciudadesVO.getDepartamentos().getId() == null) {
+			resp = "blanco";
+			return resp;
+		}
+
+		if (listaCiudades.size() > 0) {
+			resp = "existe";
+			return resp;
+		}
+		try {
+			entityManager.getTransaction().begin();
+			entityManager.persist(ciudadesVO);
+			entityManager.getTransaction().commit();
+
+			resp = "ok";
+			return resp;
+		} catch (Exception e) {
+			// TODO: handle exception
+			e.printStackTrace();
+			resp = "MAL";
+			return resp;
+		}
+
 	}
 
 	public String actualizarCiudad(Long id, CiudadesVO miCiudadesVO) {
 		// TODO Auto-generated method stub
 		String resp = "";
+
+		List<CiudadesVO> listaCiudades = new ArrayList<CiudadesVO>();
+		Query query = entityManager.createQuery(
+				"SELECT p FROM CiudadesVO p WHERE p.nombre_ciudad = '" + miCiudadesVO.getNombre_ciudad() + "' AND p.departamentos.id='"+miCiudadesVO.getDepartamentos().getId()+"'");
+
+		listaCiudades = query.getResultList();
+
+		if (listaCiudades.size() >= 1) {
+			if (listaCiudades.get(0).getNombre_ciudad().equals(miCiudadesVO.getNombre_ciudad())) {
+				
+				if (listaCiudades.get(0).getId() != miCiudadesVO.getDepartamentos().getId()) {
+					resp = "existe";
+					return resp;
+				}
+			} 
+		}
+
+		if (miCiudadesVO.getNombre_ciudad().isEmpty() || miCiudadesVO.getDepartamentos().getId() == null) {
+			resp = "blanco";
+			return resp;
+		}
 		try {
+
+			
 			CiudadesVO miCiudadesVO2 = entityManager.find(CiudadesVO.class, id);
+			
+			if (miCiudadesVO2 == null) {
+				resp = "No existe";
+				return resp;
+			}
+			
 			entityManager.getTransaction().begin();
 			miCiudadesVO2.setNombre_ciudad(miCiudadesVO.getNombre_ciudad());
 			miCiudadesVO2.setDepartamentos(miCiudadesVO.getDepartamentos());
 			entityManager.getTransaction().commit();
 
 			resp = "Actualizado";
+			return resp;
+
 		} catch (Exception e) {
 			// TODO: handle exception
-			resp = "No existe";
+			resp = "existe";
+			System.out.println(resp);
+			return resp;
 		}
-		return resp;
+
 	}
 
 	public String eliminar(Long id) {

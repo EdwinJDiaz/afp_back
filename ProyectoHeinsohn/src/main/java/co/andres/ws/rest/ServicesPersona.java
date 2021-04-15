@@ -17,6 +17,7 @@ import javax.ws.rs.core.Response.Status;
 
 import co.andres.ws.dao.PersonaDao;
 import co.andres.ws.vo.UsuariosVo;
+import net.bytebuddy.asm.Advice.Thrown;
 
 @Path("documento")
 public class ServicesPersona {
@@ -28,6 +29,14 @@ public class ServicesPersona {
 	@Produces({ MediaType.APPLICATION_JSON })
 	public List<UsuariosVo> getLista() {
 		return personaDao.GetAllDocumentos();
+
+	}
+
+	@GET
+	@Path("tipoDocumentos")
+	@Produces({ MediaType.APPLICATION_JSON })
+	public List<UsuariosVo> getListaTipo() {
+		return personaDao.GetAllTipo();
 
 	}
 
@@ -52,11 +61,48 @@ public class ServicesPersona {
 	@Path("add")
 	@Consumes({ MediaType.APPLICATION_JSON })
 	public Response registroDocumento(UsuariosVo usuariosVo) {
+		
+		System.out.println(usuariosVo);
+
 		try {
 
 			String resp = personaDao.Registrar(usuariosVo);
 			if (resp.equals("ok")) {
 				return Response.ok().build();
+			} else if (resp.equals("Correo")) {
+				return Response.status(Response.Status.NOT_ACCEPTABLE).build();
+			} else if (resp.equals("blanco")) {
+				return Response.status(Response.Status.BAD_REQUEST).build();
+			} else if (resp.equals("existe")) {
+				return Response.status(Response.Status.CONFLICT).build();
+			} else {
+				return Response.status(Response.Status.PARTIAL_CONTENT).build();
+			}
+		} catch (Exception e) {
+			// TODO: handle exception
+			e.printStackTrace();
+			return Response.status(Status.INTERNAL_SERVER_ERROR).build();
+		}
+
+	}
+
+	@PUT
+	@Path("update/{id}")
+	@Consumes({ MediaType.APPLICATION_JSON })
+	@Produces({ MediaType.APPLICATION_JSON })
+	public Response actualizarUsuarios(@PathParam("id") Long id, UsuariosVo usuariosVo) {
+		try {
+			String resp = personaDao.actualizarPersona(id, usuariosVo);
+			if (resp.equals("Actualizado")) {
+				return Response.ok().build();
+			} else if (resp.equals("Correo")) {
+				return Response.status(Response.Status.NOT_ACCEPTABLE).build();
+			} else if (resp.equals("blanco")) {
+				return Response.status(Response.Status.BAD_REQUEST).build();
+			} else if (resp.equals("No existe")) {
+				return Response.status(Response.Status.CONFLICT).build();
+			} else if (resp.equals("existe")) {
+				return Response.status(Response.Status.EXPECTATION_FAILED).build();
 			} else {
 				return Response.status(Response.Status.NOT_FOUND).build();
 			}
@@ -65,32 +111,8 @@ public class ServicesPersona {
 			e.printStackTrace();
 			return Response.status(Status.INTERNAL_SERVER_ERROR).build();
 		}
-
-	}
-	
-
-	@PUT
-	@Path("update/{id}")
-	@Consumes({MediaType.APPLICATION_JSON})
-	@Produces({MediaType.APPLICATION_JSON})
-	public Response actualizarUsuarios(@PathParam("id") Long id, UsuariosVo usuariosVo) {
-		try {
-			String resp = personaDao.actualizarPersona(id, usuariosVo);
-			if (resp.equals("Actualizado")) {
-				return Response.ok().build();
-			}else{
-				return Response.status(Response.Status.NOT_FOUND).build();
-			}
-		} catch (Exception e) {
-			// TODO: handle exception
-			e.printStackTrace();
-			return Response.status(Status.INTERNAL_SERVER_ERROR).build();
-		}
 	}
 
-	
-	
-	
 	@DELETE
 	@Path("delete/{id}")
 	public Response eliminarPersona(@PathParam("id") Long id) {
@@ -98,10 +120,10 @@ public class ServicesPersona {
 			String resp = personaDao.eliminar(id);
 			if (resp.equals("Eliminado")) {
 				return Response.ok().build();
-			}else {
+			} else {
 				if (!resp.equals("No Encontrado")) {
 					return Response.status(204).build();
-				}else {
+				} else {
 					return Response.status(Response.Status.NOT_FOUND).build();
 				}
 			}
@@ -110,20 +132,7 @@ public class ServicesPersona {
 			e.printStackTrace();
 			return Response.status(Status.INTERNAL_SERVER_ERROR).build();
 		}
-		
+
 	}
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
 
 }

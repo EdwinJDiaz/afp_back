@@ -12,25 +12,30 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
 @Entity
-@Table(name="ciudades")
+@Table(name = "ciudades")
 public class CiudadesVO implements Serializable {
 
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-	
+
 	@Id
-	@GeneratedValue(strategy=GenerationType.IDENTITY)
-	@Column(name="id")
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Column(name = "id")
 	private Long id;
-	
+
 	@Column(name = "nombre_ciudad")
 	private String nombre_ciudad;
-	
+
 	@ManyToOne
-	@JoinColumn(name = "id_departamento", referencedColumnName = "id" )
+	@JoinColumn(name = "id_departamento", referencedColumnName = "id")
 	private DepartamentosVO departamentos;
+	
+	
+	public CiudadesVO() {
+		super();
+	}
 
 	public CiudadesVO(Long id, String nombre_ciudad, DepartamentosVO departamentos) {
 		super();
@@ -38,14 +43,8 @@ public class CiudadesVO implements Serializable {
 		this.nombre_ciudad = nombre_ciudad;
 		this.departamentos = departamentos;
 	}
+
 	
-	
-
-	public CiudadesVO() {
-		super();
-	}
-
-
 
 	public Long getId() {
 		return id;
@@ -75,13 +74,10 @@ public class CiudadesVO implements Serializable {
 		return serialVersionUID;
 	}
 
-
-
 	@Override
 	public String toString() {
 		return "CiudadesVO [id=" + id + ", nombre_ciudad=" + nombre_ciudad + ", departamentos=" + departamentos + "]";
 	}
-
 	
 	
 

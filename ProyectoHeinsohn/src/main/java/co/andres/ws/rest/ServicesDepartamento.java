@@ -39,6 +39,10 @@ public class ServicesDepartamento {
 			String resp = miDepartamentosDao.registrar(miDepartamentosVO);
 			if (resp.equals("ok")) {
 				return Response.ok().build();
+			} else if (resp.equals("existe")) {
+				return Response.status(Response.Status.CONFLICT).build();
+			} else if (resp.equals("blanco")) {
+				return Response.status(Response.Status.PARTIAL_CONTENT).build();
 			} else {
 				return Response.status(Response.Status.NOT_FOUND).build();
 			}
@@ -58,6 +62,12 @@ public class ServicesDepartamento {
 			String resp = miDepartamentosDao.actualizarDepartamento(id, miDepartamentosVO);
 			if (resp.equals("Actualizado")) {
 				return Response.ok().build();
+			} else if (resp.equals("existe")) {
+				return Response.status(Response.Status.CONFLICT).build();
+			} else if (resp.equals("blanco")) {
+				return Response.status(Response.Status.PARTIAL_CONTENT).build();
+			} else if (resp.equals("No existe")) {
+				return Response.status(Response.Status.BAD_REQUEST).build();
 			} else {
 				return Response.status(Response.Status.NOT_FOUND).build();
 			}

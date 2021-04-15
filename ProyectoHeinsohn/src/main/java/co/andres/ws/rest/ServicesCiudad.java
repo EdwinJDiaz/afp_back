@@ -20,34 +20,63 @@ import co.andres.ws.vo.CiudadesVO;
 
 @Path("ciudad")
 public class ServicesCiudad {
-	
+
 	CiudadDao miCiudadDao = new CiudadDao();
-	
+
 	@GET
 	@Path("get")
 	@Produces({ MediaType.APPLICATION_JSON })
-	public List<CiudadesVO> getLista(){
+	public List<CiudadesVO> getLista() {
 		return miCiudadDao.getAllCities();
 	}
-	
+
 	@GET
 	@Path("get/{id}")
-	@Produces({MediaType.APPLICATION_JSON})
+	@Produces({ MediaType.APPLICATION_JSON })
 	public List<CiudadesVO> getCiudad(@PathParam("id") Long id) {
 		return miCiudadDao.consultarCiudad(id);
-				
-		
+
 	}
-	
-	
+
 	@POST
 	@Path("add")
-	@Consumes({MediaType.APPLICATION_JSON})
+	@Consumes({ MediaType.APPLICATION_JSON })
 	public Response registroCiudad(CiudadesVO ciudadesVO) {
 		try {
 			String resp = miCiudadDao.Registrar(ciudadesVO);
 			if (resp.equals("ok")) {
 				return Response.ok().build();
+			} else if (resp.equals("existe")) {
+				return Response.status(Response.Status.CONFLICT).build();
+			} else if (resp.equals("blanco")) {
+				return Response.status(Response.Status.PARTIAL_CONTENT).build();
+			}else if (resp.equals("No existe")) {
+				return Response.status(Response.Status.EXPECTATION_FAILED).build();
+			} else {
+				return Response.status(Response.Status.NOT_ACCEPTABLE).build();
+			}
+		} catch (Exception e) {
+			// TODO: handle exception
+			e.printStackTrace();
+			return Response.status(Status.INTERNAL_SERVER_ERROR).build();
+		}
+	}
+
+	@PUT
+	@Path("update/{id}")
+	@Consumes({ MediaType.APPLICATION_JSON })
+	@Produces({ MediaType.APPLICATION_JSON })
+	public Response actualizarCiudad(@PathParam("id") Long id, CiudadesVO miCiudadesVO) {
+		try {
+			String resp = miCiudadDao.actualizarCiudad(id, miCiudadesVO);
+			if (resp.equals("Actualizado")) {
+				return Response.ok().build();
+			} else if (resp.equals("existe")) {
+				return Response.status(Response.Status.CONFLICT).build();
+			} else if (resp.equals("No existe")) {
+				return Response.status(Response.Status.BAD_REQUEST).build();
+			} else if (resp.equals("blanco")) {
+				return Response.status(Response.Status.PARTIAL_CONTENT).build();
 			} else {
 				return Response.status(Response.Status.NOT_FOUND).build();
 			}
@@ -57,27 +86,7 @@ public class ServicesCiudad {
 			return Response.status(Status.INTERNAL_SERVER_ERROR).build();
 		}
 	}
-	
-	@PUT
-	@Path("update/{id}")
-	@Consumes({MediaType.APPLICATION_JSON})
-	@Produces({MediaType.APPLICATION_JSON})
-	public Response actualizarCiudad(@PathParam("id") Long id, CiudadesVO miCiudadesVO) {
-		try {
-			String resp = miCiudadDao.actualizarCiudad(id, miCiudadesVO);
-			if (resp.equals("Actualizado")) {
-				return Response.ok().build();
-			}else{
-				return Response.status(Response.Status.NOT_FOUND).build();
-			}
-		} catch (Exception e) {
-			// TODO: handle exception
-			e.printStackTrace();
-			return Response.status(Status.INTERNAL_SERVER_ERROR).build();
-		}
-	}
-	
-	
+
 	@DELETE
 	@Path("delete/{id}")
 	public Response eliminarCiudad(@PathParam("id") Long id) {
@@ -85,10 +94,10 @@ public class ServicesCiudad {
 			String resp = miCiudadDao.eliminar(id);
 			if (resp.equals("Eliminado")) {
 				return Response.ok().build();
-			}else {
+			} else {
 				if (!resp.equals("No Encontrado")) {
 					return Response.status(204).build();
-				}else {
+				} else {
 					return Response.status(Response.Status.NOT_FOUND).build();
 				}
 			}
@@ -97,7 +106,7 @@ public class ServicesCiudad {
 			e.printStackTrace();
 			return Response.status(Status.INTERNAL_SERVER_ERROR).build();
 		}
-		
+
 	}
 
 }

@@ -10,6 +10,7 @@ import javax.swing.JOptionPane;
 import co.andres.ws.aplicacion.JPAUtil;
 import co.andres.ws.vo.CiudadesVO;
 import co.andres.ws.vo.DepartamentosVO;
+import co.andres.ws.vo.UsuariosVo;
 
 public class DepartamentoDao {
 
@@ -27,20 +28,63 @@ public class DepartamentoDao {
 
 	public String registrar(DepartamentosVO miDepartamentosVO) {
 		// TODO Auto-generated method stub
+		String resp = "";
+
+		List<DepartamentosVO> listaDepartamentos = new ArrayList<DepartamentosVO>();
+		Query query = entityManager.createQuery("SELECT p FROM DepartamentosVO p WHERE p.nombre_departamento = '" + miDepartamentosVO.getNombre_departamento()+"'");
+
+		listaDepartamentos = query.getResultList();
+
+		if (listaDepartamentos.size() > 0) {
+			resp = "existe";
+			return resp;
+		}
+		
+		if (miDepartamentosVO.getNombre_departamento().isEmpty()) {
+			resp = "blanco";
+			return resp;
+		}
+		
 		entityManager.getTransaction().begin();
 		entityManager.persist(miDepartamentosVO);
 		entityManager.getTransaction().commit();
 
-		String resp = "ok";
+		resp = "ok";
 		return resp;
 	}
 
 	public String actualizarDepartamento(Long id, DepartamentosVO miDepartamentosVO) {
 		// TODO Auto-generated method stub
 		String resp = "";
+		
+		List<DepartamentosVO> listaDepartamentos = new ArrayList<DepartamentosVO>();
+		Query query = entityManager.createQuery("SELECT p FROM DepartamentosVO p WHERE p.nombre_departamento = '" + miDepartamentosVO.getNombre_departamento()+"'");
+
+		listaDepartamentos = query.getResultList();
+		
+		if (listaDepartamentos.size() >= 1 ) {
+			if (listaDepartamentos.get(0).getNombre_departamento().equals(miDepartamentosVO.getNombre_departamento()) ) {
+				System.out.println("Son iguales");
+			}else {
+				resp = "existe";
+				return resp;
+			}
+			
+		}
+		
+		if (miDepartamentosVO.getNombre_departamento().isEmpty()) {
+			resp = "blanco";
+			return resp;
+		}
 
 		try {
 			DepartamentosVO miDepartamentosVO2 = entityManager.find(DepartamentosVO.class, id);
+			
+			if (miDepartamentosVO2 == null) {
+				resp = "NO existe";
+				return resp;
+			}
+			
 			entityManager.getTransaction().begin();
 			miDepartamentosVO2.setNombre_departamento(miDepartamentosVO.getNombre_departamento());
 			entityManager.getTransaction().commit();
@@ -48,8 +92,9 @@ public class DepartamentoDao {
 			resp = "Actualizado";
 		} catch (Exception e) {
 			// TODO: handle exception
-			resp = "No existe";
+			resp = "existe";
 		}
+		
 		return resp;
 	}
 
@@ -71,7 +116,5 @@ public class DepartamentoDao {
 		}
 		return resp;
 	}
-
-	
 
 }
