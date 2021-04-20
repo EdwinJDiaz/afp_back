@@ -1,8 +1,10 @@
 package co.andres.ws.rest;
 
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.print.attribute.standard.MediaSize.NA;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
@@ -16,6 +18,8 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
 import co.andres.ws.dao.PersonaDao;
+import co.andres.ws.vo.Fotos;
+import co.andres.ws.vo.PreferenciasUsuarioVO;
 import co.andres.ws.vo.UsuariosVo;
 import net.bytebuddy.asm.Advice.Thrown;
 
@@ -62,8 +66,6 @@ public class ServicesPersona {
 	@Consumes({ MediaType.APPLICATION_JSON })
 	public Response registroDocumento(UsuariosVo usuariosVo) {
 		
-		System.out.println(usuariosVo);
-
 		try {
 
 			String resp = personaDao.Registrar(usuariosVo);
@@ -85,6 +87,34 @@ public class ServicesPersona {
 		}
 
 	}
+	
+	
+	@POST
+	@Path("preferencias")
+	@Consumes("multipart/form-data")
+	@Produces("application/json")
+	public Response registroPreferencias(InputStream stream) {
+		System.out.println(stream);
+		
+		String resp = personaDao.registrarFotos(stream);
+		
+		try {
+			if (resp.equals("true")) {
+				return Response.ok().build();
+			}else {
+				return Response.status(Response.Status.PARTIAL_CONTENT).build();
+			}
+		} catch (Exception e) {
+			// TODO: handle exception
+			e.printStackTrace();
+			return Response.status(Status.INTERNAL_SERVER_ERROR).build();
+		}
+		
+		
+		}
+	
+	
+	
 
 	@PUT
 	@Path("update/{id}")

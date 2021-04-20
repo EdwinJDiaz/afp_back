@@ -13,6 +13,8 @@
 		<class>co.andres.ws.vo.DepartamentosVO</class>
 		<class>co.andres.ws.vo.UsuariosVo</class>
 		<class>co.andres.ws.vo.TipoDocumentoVO</class>
+		<class>co.andres.ws.vo.PreferenciasVO</class>
+		<class>co.andres.ws.vo.PreferenciasUsuarioVO</class>
 		
 		<properties>
 			<property name="javax.persistence.jdbc.driver"

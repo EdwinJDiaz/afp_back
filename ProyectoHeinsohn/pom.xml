@@ -49,6 +49,14 @@
 			<artifactId>jersey-hk2</artifactId>
 		</dependency>
 
+
+		<dependency>
+			<groupId>javax.json.bind</groupId>
+			<artifactId>javax.json.bind-api</artifactId>
+			<version>1.0</version>
+		</dependency>
+
+
 		<dependency>
 			<groupId>org.glassfish.jersey.media</groupId>
 			<artifactId>jersey-media-json-binding</artifactId>
@@ -59,18 +67,21 @@
 			<artifactId>javax.servlet-api</artifactId>
 			<version>4.0.1</version>
 		</dependency>
-		
+
 		<dependency>
 			<groupId>mysql</groupId>
 			<artifactId>mysql-connector-java</artifactId>
 			<version>8.0.21</version>
 		</dependency>
-		
+
+	
+
+
 		<dependency>
-  			<groupId>org.hibernate</groupId>
-  			<artifactId>hibernate-core</artifactId>
-  			<version>5.4.19.Final</version>
-  		</dependency>
+			<groupId>org.hibernate</groupId>
+			<artifactId>hibernate-core</artifactId>
+			<version>5.4.19.Final</version>
+		</dependency>
 
 	</dependencies>
 	<properties>

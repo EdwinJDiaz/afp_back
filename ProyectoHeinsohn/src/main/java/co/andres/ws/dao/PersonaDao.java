@@ -1,5 +1,7 @@
 package co.andres.ws.dao;
 
+import java.io.InputStream;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -9,9 +11,10 @@ import javax.persistence.EntityManager;
 import javax.persistence.Query;
 import javax.swing.JOptionPane;
 
-import org.hibernate.Criteria;
 
+import co.andres.ws.vo.PreferenciasUsuarioVO;
 import co.andres.ws.vo.UsuariosVo;
+
 
 import co.andres.ws.aplicacion.JPAUtil;
 
@@ -86,8 +89,53 @@ public class PersonaDao {
 		}
 
 		try {
+
+			UsuariosVo miUsuariosVo = new UsuariosVo();
+
+			miUsuariosVo.setApellidos(usuariosVo.getApellidos());
+			miUsuariosVo.setAvatar(usuariosVo.getAvatar());
+			miUsuariosVo.setCiudades(usuariosVo.getCiudades());
+			miUsuariosVo.setCorreo(usuariosVo.getCorreo());
+			miUsuariosVo.setDocumento(usuariosVo.getDocumento());
+			miUsuariosVo.setFecha_nacimiento(usuariosVo.getFecha_nacimiento());
+			miUsuariosVo.setFecha_registro(usuariosVo.getFecha_registro());
+			miUsuariosVo.setSexo(usuariosVo.getSexo());
+			miUsuariosVo.setTelefono(usuariosVo.getTelefono());
+			miUsuariosVo.setTipoDocumento(usuariosVo.getTipoDocumento());
+			miUsuariosVo.setNombre(usuariosVo.getNombre());
+			
+			List<PreferenciasUsuarioVO> listaPreferencias = new ArrayList<PreferenciasUsuarioVO>();
+			
+			
+			for (PreferenciasUsuarioVO usuariosVo2 : usuariosVo.getPreferenciasUsuarioVO()) {
+				
+				
+				PreferenciasUsuarioVO preferenciasUsuarioVO = new PreferenciasUsuarioVO();
+				
+				System.out.println("PREFERENCIA");
+				preferenciasUsuarioVO.setPreferenciasVO(usuariosVo2.getPreferenciasVO());
+				System.out.println("USUARIO");
+				preferenciasUsuarioVO.setUsuariosVo(miUsuariosVo);
+				
+				//listaPreferencias.add(preferenciasUsuarioVO);
+				
+				
+				listaPreferencias.add(preferenciasUsuarioVO);
+				
+				
+			}
+			
+			for (PreferenciasUsuarioVO preferenciasUsuarioVO : listaPreferencias) {
+				System.out.println("BIEN");
+				miUsuariosVo.getPreferenciasUsuarioVO().add(preferenciasUsuarioVO);
+			}
+
+			//miUsuariosVo.setPreferenciasUsuarioVO(listaPreferencias);
+			
+
+			
 			entityManager.getTransaction().begin();
-			entityManager.persist(usuariosVo);
+			entityManager.persist(miUsuariosVo);
 			entityManager.getTransaction().commit();
 
 			resp = "ok";
@@ -210,6 +258,14 @@ public class PersonaDao {
 			return miUsuariosVo;
 		}
 		return null;
+	}
+
+
+	public String registrarFotos(InputStream stream) {
+		// TODO Auto-generated method stub
+		
+		System.out.println(stream);
+		return "true";
 	}
 
 }

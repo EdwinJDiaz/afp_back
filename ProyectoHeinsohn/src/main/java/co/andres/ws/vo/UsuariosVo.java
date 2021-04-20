@@ -1,7 +1,14 @@
 package co.andres.ws.vo;
 
 import java.io.Serializable;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
+import javax.json.bind.annotation.JsonbDateFormat;
+import javax.json.bind.annotation.JsonbTransient;
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -9,7 +16,11 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
+
+import org.hibernate.type.BlobType;
 
 @Entity
 @Table(name = "usuarios")
@@ -48,12 +59,30 @@ public class UsuariosVo implements Serializable {
 	@Column(name = "telefono")
 	private String telefono;
 
+	@Column(name = "fecha_nacimiento")
+	@JsonbDateFormat(value = "yyyy-MM-dd")
+	private LocalDate fecha_nacimiento;
+
+	@Column(name = "fecha_registro")
+	@JsonbDateFormat(value = "yyyy-MM-dd")
+	private LocalDate fecha_registro;
+
+	@Column(name = "sexo")
+	private String sexo;
+
+	@Column(name = "avatar")
+	private String avatar;
+	
+	@OneToMany(mappedBy = "usuariosVo", cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+	private List<PreferenciasUsuarioVO> preferenciasUsuarioVO;
+
 	public UsuariosVo() {
-		super();
+		this.preferenciasUsuarioVO = new ArrayList<PreferenciasUsuarioVO>();
 	}
 
 	public UsuariosVo(Long id, String documento, CiudadesVO ciudades, TipoDocumentoVO tipoDocumento, String nombre,
-			String apellidos, String correo, String telefono) {
+			String apellidos, String correo, String telefono, LocalDate fecha_nacimiento, LocalDate fecha_registro,
+			String sexo, String avatar, List<PreferenciasUsuarioVO> preferenciasUsuarioVO) {
 		super();
 		this.id = id;
 		this.documento = documento;
@@ -63,6 +92,11 @@ public class UsuariosVo implements Serializable {
 		this.apellidos = apellidos;
 		this.correo = correo;
 		this.telefono = telefono;
+		this.fecha_nacimiento = fecha_nacimiento;
+		this.fecha_registro = fecha_registro;
+		this.sexo = sexo;
+		this.avatar = avatar;
+		this.preferenciasUsuarioVO = preferenciasUsuarioVO;
 	}
 
 	public Long getId() {
@@ -129,16 +163,52 @@ public class UsuariosVo implements Serializable {
 		this.telefono = telefono;
 	}
 
+	public LocalDate getFecha_nacimiento() {
+		return fecha_nacimiento;
+	}
+
+	public void setFecha_nacimiento(LocalDate fecha_nacimiento) {
+		this.fecha_nacimiento = fecha_nacimiento;
+	}
+
+	public LocalDate getFecha_registro() {
+		return fecha_registro;
+	}
+
+	public void setFecha_registro(LocalDate fecha_registro) {
+		this.fecha_registro = fecha_registro;
+	}
+
+	public String getSexo() {
+		return sexo;
+	}
+
+	public void setSexo(String sexo) {
+		this.sexo = sexo;
+	}
+
+	public String getAvatar() {
+		return avatar;
+	}
+
+	public void setAvatar(String avatar) {
+		this.avatar = avatar;
+	}
+
+	
+	public List<PreferenciasUsuarioVO> getPreferenciasUsuarioVO() {
+		return preferenciasUsuarioVO;
+	}
+
+	public void setPreferenciasUsuarioVO(List<PreferenciasUsuarioVO> preferenciasUsuarioVO) {
+		this.preferenciasUsuarioVO = preferenciasUsuarioVO;
+	}
+
 	public static long getSerialversionuid() {
 		return serialVersionUID;
 	}
 
-	@Override
-	public String toString() {
-		return "UsuariosVo [id=" + id + ", documento=" + documento + ", ciudades=" + ciudades + ", tipoDocumento="
-				+ tipoDocumento + ", nombre=" + nombre + ", apellidos=" + apellidos + ", correo=" + correo
-				+ ", telefono=" + telefono + "]";
-	}
+
 	
 	
 
