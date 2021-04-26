@@ -56,6 +56,11 @@ public class DepartamentosVO implements Serializable {
 		return serialVersionUID;
 	}
 
+	@Override
+	public String toString() {
+		return "DepartamentosVO [id=" + id + ", nombre_departamento=" + nombre_departamento + "]";
+	}
+
 	
 
 	

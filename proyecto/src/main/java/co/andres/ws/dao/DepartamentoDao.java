@@ -98,9 +98,11 @@ public class DepartamentoDao {
 
 	public String eliminar(Long id) {
 		// TODO Auto-generated method stub
+	
 		String resp = "";
 		try {
 			DepartamentosVO miDepartamentosVO = entityManager.find(DepartamentosVO.class, id);
+			System.out.println(miDepartamentosVO.getNombre_departamento());
 			entityManager.getTransaction().begin();
 			entityManager.remove(miDepartamentosVO);
 			entityManager.getTransaction().commit();

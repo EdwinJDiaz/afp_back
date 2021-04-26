@@ -63,10 +63,6 @@ public class Fotos implements Serializable {
 		return serialVersionUID;
 	}
 
-	@Override
-	public String toString() {
-		return "Fotos [id=" + id + ", Fotoscol=" + Fotoscol + "]";
-	}
 
 	
 	

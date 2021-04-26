@@ -1,13 +1,9 @@
 package co.andres.ws.dao;
 
-import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
 import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Base64;
 import java.util.List;
-import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -15,7 +11,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.Query;
 import javax.swing.JOptionPane;
 
-import org.hibernate.type.BlobType;
+import org.apache.commons.codec.digest.DigestUtils;
 
 import co.andres.ws.aplicacion.JPAUtil;
 import co.andres.ws.vo.Fotos;
@@ -23,18 +19,9 @@ import co.andres.ws.vo.PreferenciasUsuarioVO;
 import co.andres.ws.vo.PreferenciasVO;
 import co.andres.ws.vo.UsuariosVo;
 
-import com.cloudinary.*;
 import com.cloudinary.utils.ObjectUtils;
 
 public class PersonaDao {
-	
-	Cloudinary cloudinary = new Cloudinary(ObjectUtils.asMap(
-			"cloud_name", "hdjsownnk",
-			"api_key", "926599253344788",
-			"api_secret", "I8rBOy-rnozmrxhNL_Lg7hqtj7s"));
-	
-	
-	
 
 	EntityManager entityManager = JPAUtil.getEntityManagerFactory().createEntityManager();
 
@@ -45,6 +32,10 @@ public class PersonaDao {
 		Query query = entityManager.createQuery("SELECT p FROM UsuariosVo p");
 
 		listaUsuarios = query.getResultList();
+
+		for (UsuariosVo usuariosVo : listaUsuarios) {
+			System.out.println(usuariosVo);
+		}
 		return listaUsuarios;
 	}
 
@@ -94,13 +85,26 @@ public class PersonaDao {
 
 		List<UsuariosVo> listaUsuarios = new ArrayList<UsuariosVo>();
 
-		Query query = entityManager.createQuery("SELECT p FROM UsuariosVo p WHERE p.documento="
-				+ usuariosVo.getDocumento() + " OR p.correo='" + usuariosVo.getCorreo() + "'");
+		Query query = entityManager
+				.createQuery("SELECT p FROM UsuariosVo p WHERE p.documento='" + usuariosVo.getDocumento() + "'");
 
 		listaUsuarios = query.getResultList();
 
 		if (listaUsuarios.size() > 0) {
-			resp = "existe";
+
+			resp = "existeCedula";
+			return resp;
+
+		}
+
+		List<UsuariosVo> listaUsuariosCorreo = new ArrayList<UsuariosVo>();
+
+		query = entityManager.createQuery("SELECT p FROM UsuariosVo p WHERE p.correo='" + usuariosVo.getCorreo() + "'");
+
+		listaUsuariosCorreo = query.getResultList();
+
+		if (listaUsuarios.size() > 0) {
+			resp = "existeCorreo";
 			return resp;
 		}
 
@@ -114,9 +118,9 @@ public class PersonaDao {
 			miUsuariosVo.setCorreo(usuariosVo.getCorreo());
 			miUsuariosVo.setDocumento(usuariosVo.getDocumento());
 			miUsuariosVo.setFecha_nacimiento(usuariosVo.getFecha_nacimiento());
-			
+
 			miUsuariosVo.setFecha_registro(LocalDate.now());
-			
+
 			miUsuariosVo.setSexo(usuariosVo.getSexo());
 			miUsuariosVo.setTelefono(usuariosVo.getTelefono());
 			miUsuariosVo.setTipoDocumento(usuariosVo.getTipoDocumento());
@@ -143,6 +147,10 @@ public class PersonaDao {
 				System.out.println("BIEN");
 				miUsuariosVo.getPreferenciasUsuarioVO().add(preferenciasUsuarioVO);
 			}
+
+			String hashpass = DigestUtils.md5Hex(usuariosVo.getPassword()).toUpperCase();
+
+			miUsuariosVo.setPassword(hashpass);
 
 			// miUsuariosVo.setPreferenciasUsuarioVO(listaPreferencias);
 
@@ -192,15 +200,14 @@ public class PersonaDao {
 				System.out.println("son iguales");
 				listaUsuarios.clear();
 			} else {
-				resp = "existe";
+				resp = "existeCedula";
 				return resp;
 			}
 		}
 
 		listaUsuarios = new ArrayList<UsuariosVo>();
 
-		query = entityManager
-				.createQuery("SELECT p FROM UsuariosVo p WHERE p.documento='" + usuariosVo.getCorreo() + "'");
+		query = entityManager.createQuery("SELECT p FROM UsuariosVo p WHERE p.correo='" + usuariosVo.getCorreo() + "'");
 
 		listaUsuarios = query.getResultList();
 
@@ -209,7 +216,7 @@ public class PersonaDao {
 			if (listaUsuarios.get(0).getCorreo().equals(usuariosVo.getCorreo())) {
 				System.out.println("son iguales");
 			} else {
-				resp = "existe";
+				resp = "existeCorreo";
 				return resp;
 			}
 		}
@@ -230,18 +237,19 @@ public class PersonaDao {
 			miUsuariosVo.setCorreo(usuariosVo.getCorreo());
 			miUsuariosVo.setTelefono(usuariosVo.getTelefono());
 			miUsuariosVo.setTipoDocumento(usuariosVo.getTipoDocumento());
-			
+
+			String hashpass = DigestUtils.md5Hex(usuariosVo.getPassword()).toUpperCase();
+
+			miUsuariosVo.setPassword(hashpass);
+
 			if (usuariosVo.getAvatar() == null) {
-				
-			}else {
+
+			} else {
 				miUsuariosVo.setAvatar(usuariosVo.getAvatar());
 			}
 
-			
-			
-			
 			miUsuariosVo.setFecha_nacimiento(usuariosVo.getFecha_nacimiento());
-			
+
 			miUsuariosVo.setSexo(usuariosVo.getSexo());
 
 			List<PreferenciasUsuarioVO> listaPreferencias = new ArrayList<PreferenciasUsuarioVO>();
@@ -257,18 +265,17 @@ public class PersonaDao {
 				listaPreferencias.add(preferenciasUsuarioVO);
 
 			}
-			
 
-			
-			Query query2 = entityManager.createQuery("DELETE FROM PreferenciasUsuarioVO p WHERE p.usuariosVo=" +miUsuariosVo.getDocumento());
+			Query query2 = entityManager.createQuery(
+					"DELETE FROM PreferenciasUsuarioVO p WHERE p.usuariosVo=" + miUsuariosVo.getDocumento());
 			query2.executeUpdate();
-			
+
 			miUsuariosVo.setPreferenciasUsuarioVO(listaPreferencias);
-			/*for (PreferenciasUsuarioVO preferenciasUsuarioVO : listaPreferencias) {
-				System.out.println("BIEN");
-				miUsuariosVo.getPreferenciasUsuarioVO().clear();
-				miUsuariosVo.getPreferenciasUsuarioVO().add(preferenciasUsuarioVO);
-			}*/
+			/*
+			 * for (PreferenciasUsuarioVO preferenciasUsuarioVO : listaPreferencias) {
+			 * System.out.println("BIEN"); miUsuariosVo.getPreferenciasUsuarioVO().clear();
+			 * miUsuariosVo.getPreferenciasUsuarioVO().add(preferenciasUsuarioVO); }
+			 */
 
 			entityManager.getTransaction().commit();
 
@@ -314,41 +321,41 @@ public class PersonaDao {
 		return null;
 	}
 
-	public String registrarFotos(String fotoscol) throws IOException {
+	public String registrarFotos(String fotoscol, String documento) throws IOException {
 		// TODO Auto-generated method stub
 
 		try {
-			/*Map params = ObjectUtils.asMap(
-					"public_id", "primeraFoto",
-					"overwrite", true,
-					"notification_url", " http://res.cloudinary.com/hdjsownnk",
-					"resource_type", "auto");
-			
-			
-			
-			
-			Map uploadResult = cloudinary.uploader().upload(Fotoscol, params);*/
-			
-			Fotos fotos = new Fotos();
-			
-			fotos.setFotoscol(fotoscol);
-			
-			
-				entityManager.getTransaction().begin();
-				entityManager.persist(fotos);
-				entityManager.getTransaction().commit();
-				
-				return "true";
-			
-			
-			
+			/*
+			 * Map params = ObjectUtils.asMap( "public_id", "primeraFoto", "overwrite",
+			 * true, "notification_url", " http://res.cloudinary.com/hdjsownnk",
+			 * "resource_type", "auto");
+			 * 
+			 * 
+			 * 
+			 * 
+			 * Map uploadResult = cloudinary.uploader().upload(Fotoscol, params);
+			 */
+
+			Query query = entityManager.createQuery("SELECT p FROM UsuariosVo p WHERE p.documento='" + documento + "'");
+
+			List<UsuariosVo> listaUsuarios = new ArrayList<UsuariosVo>();
+
+			listaUsuarios = query.getResultList();
+
+			UsuariosVo miUsuariosVo = entityManager.find(UsuariosVo.class, listaUsuarios.get(0).getId());
+
+			entityManager.getTransaction().begin();
+			miUsuariosVo.setAvatar(fotoscol);
+			entityManager.getTransaction().commit();
+
+			return "true";
+
 		} catch (Exception e) {
 			// TODO: handle exception
 			e.printStackTrace();
 			return "MAL";
 		}
-		
-		
+
 	}
 
 	public List<PreferenciasVO> GetPreferencia() {
@@ -369,16 +376,80 @@ public class PersonaDao {
 
 		listaFotos = query.getResultList();
 		return listaFotos;
-		
+
 	}
 
 	public List<UsuariosVo> GetGrafica() {
 		// TODO Auto-generated method stub
-		
+
 		List<UsuariosVo> listaGraficaList = new ArrayList<UsuariosVo>();
-		
-		Query query = entityManager.createQuery("SELECT count(p.ciudades.id), p.ciudades.nombre_ciudad FROM UsuariosVo p group by p.ciudades.id");
+
+		Query query = entityManager.createQuery(
+				"SELECT count(p.ciudades.id), p.ciudades.nombre_ciudad FROM UsuariosVo p group by p.ciudades.id");
 		listaGraficaList = query.getResultList();
 		return listaGraficaList;
+	}
+
+	public List<String> getFechas(String fecha1, String fecha2) {
+		// TODO Auto-generated method stub
+
+		try {
+			List<String> listaFechas = new ArrayList<String>();
+
+			Query query = entityManager.createQuery(
+					"SELECT p FROM UsuariosVo p WHERE p.fecha_registro BETWEEN '" + fecha1 + "' AND '" + fecha2 + "'");
+
+			listaFechas = query.getResultList();
+
+			if (listaFechas.size() > 0) {
+				return listaFechas;
+			}
+
+			return null;
+		} catch (Exception e) {
+			// TODO: handle exception
+			e.printStackTrace();
+			return null;
+		}
+
+	}
+
+	public String consultarLogin(UsuariosVo usuariosVo) {
+		// TODO Auto-generated method stub
+
+		String resp = "";
+		
+		Pattern pattern = Pattern.compile(
+				"^[_A-Za-z0-9-\\+]+(\\.[_A-Za-z0-9-]+)*@" + "[A-Za-z0-9-]+(\\.[A-Za-z0-9]+)*(\\.[A-Za-z]{2,})$");
+
+		Matcher mather = pattern.matcher(usuariosVo.getCorreo());
+
+		if (mather.find() == false) {
+			resp = "Correo";
+			return resp;
+		}
+
+		List<UsuariosVo> listaFechas = new ArrayList<UsuariosVo>();
+
+		Query query = entityManager
+				.createQuery("SELECT p FROM UsuariosVo p WHERE p.correo ='" + usuariosVo.getCorreo() + "'");
+
+		listaFechas = query.getResultList();
+
+		if (listaFechas.size() < 1) {
+			resp = "No existe";
+			return resp;
+		}
+
+		String pass = usuariosVo.getPassword();
+
+		String hashpass = DigestUtils.md5Hex(pass).toUpperCase();
+
+		if (listaFechas.get(0).getPassword().equals(hashpass)) {
+			return "ok";
+		}
+
+		return "MAL";
+
 	}
 }

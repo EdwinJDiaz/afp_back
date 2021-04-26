@@ -74,6 +74,11 @@ public class CiudadesVO implements Serializable {
 		return serialVersionUID;
 	}
 
+	@Override
+	public String toString() {
+		return "CiudadesVO [id=" + id + ", nombre_ciudad=" + nombre_ciudad + ", departamentos=" + departamentos + "]";
+	}
+
 	
 	
 

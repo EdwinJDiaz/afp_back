@@ -67,6 +67,12 @@ public class PreferenciasVO implements Serializable {
 	}
 
 
+	@Override
+	public String toString() {
+		return "PreferenciasVO [id=" + id + ", nombre_preferencia=" + nombre_preferencia + "]";
+	}
+
+
 	
 	
 	

@@ -13,6 +13,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.Lob;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
@@ -64,12 +65,17 @@ public class UsuariosVo implements Serializable {
 
 	@Column(name = "sexo")
 	private String sexo;
-
-	@Column(name = "avatar")
+	
+	@Lob
+	@Column(name = "avatar", columnDefinition ="BLOB")
 	private String avatar;
 	
 	@OneToMany(mappedBy = "usuariosVo", cascade = {CascadeType.PERSIST, CascadeType.MERGE})
 	private List<PreferenciasUsuarioVO> preferenciasUsuarioVO;
+	
+	
+	@Column(name = "password")
+	private String password;
 
 	public UsuariosVo() {
 		this.preferenciasUsuarioVO = new ArrayList<PreferenciasUsuarioVO>();
@@ -77,7 +83,7 @@ public class UsuariosVo implements Serializable {
 
 	public UsuariosVo(Long id, String documento, CiudadesVO ciudades, TipoDocumentoVO tipoDocumento, String nombre,
 			String apellidos, String correo, String telefono, LocalDate fecha_nacimiento, LocalDate fecha_registro,
-			String sexo, String avatar, List<PreferenciasUsuarioVO> preferenciasUsuarioVO) {
+			String sexo, String avatar, List<PreferenciasUsuarioVO> preferenciasUsuarioVO, String password) {
 		super();
 		this.id = id;
 		this.documento = documento;
@@ -92,6 +98,7 @@ public class UsuariosVo implements Serializable {
 		this.sexo = sexo;
 		this.avatar = avatar;
 		this.preferenciasUsuarioVO = preferenciasUsuarioVO;
+		this.password = password;
 	}
 
 	public Long getId() {
@@ -190,7 +197,6 @@ public class UsuariosVo implements Serializable {
 		this.avatar = avatar;
 	}
 
-	
 	public List<PreferenciasUsuarioVO> getPreferenciasUsuarioVO() {
 		return preferenciasUsuarioVO;
 	}
@@ -199,9 +205,19 @@ public class UsuariosVo implements Serializable {
 		this.preferenciasUsuarioVO = preferenciasUsuarioVO;
 	}
 
+	public String getPassword() {
+		return password;
+	}
+
+	public void setPassword(String password) {
+		this.password = password;
+	}
+
 	public static long getSerialversionuid() {
 		return serialVersionUID;
 	}
+
+	
 
 
 	

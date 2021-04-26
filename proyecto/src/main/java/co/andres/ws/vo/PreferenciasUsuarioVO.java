@@ -41,6 +41,8 @@ public class PreferenciasUsuarioVO implements Serializable {
 		super();
 	}
 
+
+
 	public PreferenciasUsuarioVO(Long id, PreferenciasVO preferenciasVO, UsuariosVo usuariosVo) {
 		super();
 		this.id = id;
@@ -48,34 +50,58 @@ public class PreferenciasUsuarioVO implements Serializable {
 		this.usuariosVo = usuariosVo;
 	}
 
+
+
 	public Long getId() {
 		return id;
 	}
 
+
+
 	public void setId(Long id) {
 		this.id = id;
 	}
-	
+
+
+
 	public PreferenciasVO getPreferenciasVO() {
 		return preferenciasVO;
 	}
 
+
+
 	public void setPreferenciasVO(PreferenciasVO preferenciasVO) {
 		this.preferenciasVO = preferenciasVO;
 	}
-	
-	@JsonbTransient
+
+
+	@JsonbTransient 
 	public UsuariosVo getUsuariosVo() {
 		return usuariosVo;
 	}
+
+
 
 	public void setUsuariosVo(UsuariosVo usuariosVo) {
 		this.usuariosVo = usuariosVo;
 	}
 
+
+
 	public static long getSerialversionuid() {
 		return serialVersionUID;
 	}
+
+
+
+	@Override
+	public String toString() {
+		return "PreferenciasUsuarioVO [id=" + id + ", preferenciasVO=" + preferenciasVO ;
+	}
+
+
+
+	
 
 	
 
